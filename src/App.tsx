@@ -262,24 +262,25 @@ const INITIAL_INSTRUMENTS = [
   { name: "Cathedral Tubular Bells", class: "Mallets", freq: 261.63, waveform: "sawtooth", attack: 0.002, decay: 3.0, sustain: 0.5, release: 2.0, timbre: "Massive brass chimes recreating a rich, dark church bell toll." }
 ];
 
-const EXPERT_ARTISTS = Array.from({ length: 80 }).map((_, i) => {
-  const bases = [
-    { name: "The Velvet Vanguard", genre: "synthwave", origin: "Paris" },
-    { name: "La Diva Furiosa", genre: "opera", origin: "Milan" },
-    { name: "Silicon Screamer", genre: "metal", origin: "Munich" },
-    { name: "Blue Note Echoes", genre: "jazz", origin: "New York" },
-    { name: "Streets of 93", genre: "rap", origin: "Brooklyn" },
-    { name: "Stardust Whispers", genre: "ambient", origin: "Reykjavik" },
-    { name: "Canyon Drifter", genre: "country", origin: "Nashville" },
-    { name: "Windows 95 Dreamer", genre: "vaporwave", origin: "Tokyo" }
-  ];
-  const select = bases[i % bases.length];
-  return {
-    name: `${select.name} ${i > 7 ? `Vol. ${Math.floor(i / 8) + 1}` : ''}`,
-    genre: select.genre,
-    origin: `${select.origin} Sector ${i + 1}`
-  };
-});
+const ARTIST_POOLS = [
+  { year: 2020, genre: "synthwave", city: "Paris", artists: ["The Velvet Vanguard", "Neon Nights", "Retro Wave Riders", "Chrome Dreams"] },
+  { year: 2021, genre: "opera", city: "Milan", artists: ["La Diva Furiosa", "Madame Melodia", "The Opera Phantom", "Soprano Supreme"] },
+  { year: 2022, genre: "metal", city: "Munich", artists: ["Silicon Screamer", "Iron Thunder", "Metal Mayhem", "Riff Lords"] },
+  { year: 2022, genre: "jazz", city: "New York", artists: ["Blue Note Echoes", "Midnight Sax", "The Cool Cats", "Brass Avenue"] },
+  { year: 2023, genre: "rap", city: "Brooklyn", artists: ["Streets of 93", "Concrete Poets", "Mic Masters", "Beat Surgeons"] },
+  { year: 2023, genre: "ambient", city: "Reykjavik", artists: ["Stardust Whispers", "Aurora Drones", "Glacier Tones", "Northern Lights Ensemble"] },
+  { year: 2024, genre: "country", city: "Nashville", artists: ["Canyon Drifter", "Honky Tonk Heroes", "Dusty Trails", "Frontier Sound"] },
+  { year: 2025, genre: "vaporwave", city: "Tokyo", artists: ["Windows 95 Dreamer", "Pixel Nostalgia", "Mall Soft", "CRT Glow"] }
+];
+
+const EXPERT_ARTISTS = ARTIST_POOLS.flatMap(pool =>
+  pool.artists.map(name => ({
+    name,
+    genre: pool.genre,
+    origin: `${pool.city} (${pool.year})`,
+    era: pool.year.toString()
+  }))
+);
 
 const RECORDING_VENUES = Array.from({ length: 60 }).map((_, i) => {
   const venues = [
@@ -462,6 +463,7 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstallable, setIsInstallable] = useState(false);
   const [isAppInstalled, setIsAppInstalled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -1000,7 +1002,7 @@ export default function App() {
       {/* HEADER */}
       <header className="bg-[#1C1C1C] border-b border-[#2C2C2C] px-4 md:px-6 py-3 flex items-center justify-between shadow-md relative z-30">
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={() => { setLeftSidebarOpen(!leftSidebarOpen); setRightSidebarOpen(false); }}
             className="lg:hidden p-2.5 bg-[#252525] hover:bg-[#2F2F2F] rounded border border-[#333333] text-[#A0A0A0] transition-colors focus:outline-none"
           >
@@ -1009,10 +1011,31 @@ export default function App() {
           <div className="flex items-center gap-2">
             <div className="bg-[#F35A22] text-[#121212] p-1.5 rounded font-black text-xs tracking-wider flex items-center justify-center shrink-0">PWA</div>
             <div className="hidden sm:block">
-              <span className="font-bold tracking-tight text-sm text-[#F5F5F5]">VIBESYNC PWA</span>
+              <span className="font-bold tracking-tight text-sm text-[#F5F5F5]">MUSICA</span>
               <p className="text-[10px] text-[#A0A0A0] font-mono leading-none">OFFLINE-ENABLED HYBRID</p>
             </div>
           </div>
+        </div>
+        {/* Auth Button */}
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="p-2.5 bg-[#252525] hover:bg-[#2F2F2F] rounded border border-[#333333] text-[#A0A0A0] transition-colors focus:outline-none"
+          >
+            {user ? (
+              <>
+                <div className="flex items-center gap-1">
+                  <User className="w-3 h-3" />
+                  <span className="text-xs font-mono">{user?.displayName || user?.email?.split('@')[0] || 'User'}</span>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center gap-1">
+                <LogIn className="w-3 h-3" />
+                <span className="text-xs font-mono">Sign In</span>
+              </div>
+            )}
+          </button>
         </div>
 
         {/* WORKFLOW MODES */}

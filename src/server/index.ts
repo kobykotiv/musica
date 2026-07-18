@@ -1,43 +1,76 @@
-import express, { Request, Response } from 'express';
-import { Stripe } from 'stripe';
+import express from 'express';
+import Stripe from 'stripe';
 
 const app = express();
+const port = process.env.PORT || 3000;
+
+// Initialize Stripe with secret key from .env.local
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2026-06-24',  // Updated to match expected format
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || ''
+  apiVersion: '2020-08-27' as const, // Using a stable version
 });
 
-app.use(express.json());
-
-app.post('/webhook', async (req: Request, res: Response) => {
+// Route for creating checkout sessions
+app.post('/api/stripe/checkout', express.json(), async (req, res) => {
   try {
-    const event = await stripe.webhooks.constructEvent(
-      req.body, req.headers['stripe-signature'] as string,
-      process.env.STRIPE_WEBHOOK_SECRET || ''
-    );
-
-    // Handle the event
-    switch (event.type) {
-      case 'setup_intent.created':
-        // Handle setup intent creation
-        console.log('Setup intent created:', event.data.object);
-        break;
-      case 'checkout.session.completed':
-        // Handle successful payment
-        console.log('Payment completed:', event.data.object);
-        break;
-      default:
-        console.log(`Unhandled event type: ${event.type}`);
-    }
-
-    res.json({ received: true });
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-    res.status(400).send(`Webhook Error: ${errorMessage}`);
+    const { priceId } = req.body as { priceId: string };
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [{
+        price: priceId,
+        quantity: 1,
+      }],
+      mode: 'subscription',
+      success_url: 'https://your-vercel-domain.com/success',
+      cancel_url: 'https://your-vercel-domain.com/cancel',
+    });
+    res.json({ sessionId: session.id });
+  } catch (error) {
+    console.error('Checkout session creation failed:', error);
+    res.status(500).json({ error: 'Checkout session creation failed' });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Webhook handler
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const sig = req.headers['stripe-signature'] as string | string[] | undefined;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+  
+  if (!sig) {
+    return res.status(400).send('Missing stripe-signature header');
+  }
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err) {
+    console.error('Webhook signature verification failed.', err);
+    return res.status(400).send(`Webhook Error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case 'checkout.session.completed':
+      const session = event.data.object as Stripe.Checkout.Session;
+      console.log('Payment succeeded for session:', session.id);
+      // Handle subscription activation
+      break;
+    case 'customer.subscription.updated':
+      const subscription = event.data.object as Stripe.Subscription;
+      console.log('Subscription updated:', subscription.id);
+      // Handle subscription changes
+      break;
+    case 'customer.subscription.deleted':
+      const subscription = event.data.object as Stripe.Subscription;
+      console.log('Subscription canceled:', subscription.id);
+      // Handle subscription cancellation
+      break;
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+
+  res.json({ received: true });
+});
+
+app.listen(port, () => {
+  console.log(`✅ Stripe API server running on port ${port}`);
 });

@@ -7,12 +7,16 @@
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";  // Fixed: changed from named import to default import
+import App from "./App";
+import "../styles/globals.css";
+import { AuthProvider } from "./lib/AuthContext";
 
 const elem = document.getElementById("root")!;
 const app = (
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>
 );
 

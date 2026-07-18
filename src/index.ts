@@ -6,6 +6,16 @@ const server = serve({
     // Serve index.html for all unmatched routes.
     "/*": index,
 
+    "/api/health": {
+      async GET(req) {
+        return Response.json({
+          ok: true,
+          service: "musica",
+          mode: process.env.NODE_ENV || "development",
+        });
+      },
+    },
+
     "/api/hello": {
       async GET(req) {
         return Response.json({
