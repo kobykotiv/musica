@@ -7,7 +7,7 @@
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import App from "./App";  // Fixed: changed from named import to default import
 
 const elem = document.getElementById("root")!;
 const app = (
