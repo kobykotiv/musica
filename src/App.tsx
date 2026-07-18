@@ -12,25 +12,159 @@ import {
 // ============================================================================
 // CONFIGURATION & STYLING CONSTANTS (DORICO THEMED)
 // ============================================================================
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'dorico-vibesync-pwa';
+const appId = 'dorico-vibesync-pwa';
 
 const GENRE_POOL = [
-  { id: 'synthwave', name: 'Synthwave', style: 'Highly rhythmic, robotic retro, vocoder-like pacing', defaultVoice: 'Charon' },
-  { id: 'opera', name: 'Classical Opera', style: 'Dramatic, wide pitch sweeps, extended vowels, theatrical pauses', defaultVoice: 'Kore' },
-  { id: 'metal', name: 'Industrial Metal', style: 'Gravelly, high aggression growls, sharp staccato cutoffs', defaultVoice: 'Puck' },
-  { id: 'jazz', name: 'Nocturne Jazz', style: 'Breathy, laid-back swing, syncopated and micro-delayed syllables', defaultVoice: 'Leda' },
-  { id: 'rap', name: 'Boom Bap Hip-Hop', style: 'Rapid-fire, staccato cadence, heavy rhythmic emphasis', defaultVoice: 'Fenrir' },
-  { id: 'ambient', name: 'Ambient Dream-Pop', style: 'Ethereal whispery vocals, slow dragging, highly reverberated feel', defaultVoice: 'Leda' },
-  { id: 'country', name: 'Classic Bluegrass twang', style: 'Uplifting drawl, microtonal slides, conversational folk rhythm', defaultVoice: 'Sadaltager' },
-  { id: 'gregorian', name: 'Gregorian Chant', style: 'Monophonic vocal line, long solemn notes, spiritual reverberation', defaultVoice: 'Fenrir' },
-  { id: 'vaporwave', name: 'Vaporwave Slush', style: 'Slowed, pitch-dropped, nostalgic mall music aesthetics', defaultVoice: 'Leda' },
-  { id: 'electroswing', name: 'Electro-Swing', style: 'Fast syncopation, retro horn stabs, playful dynamic delivery', defaultVoice: 'Puck' },
-  { id: 'shoegaze', name: 'Dreampop Shoegaze', style: 'Drowned-out melodies, wall-of-sound humming vocals', defaultVoice: 'Leda' },
-  { id: 'techno', name: 'Berlin Acid Techno', style: 'Hypnotic, dark industrial pacing, repetitive cyclical delivery', defaultVoice: 'Puck' },
-  { id: 'baroque', name: 'High Baroque', style: 'Intricate counterpoint pacing, highly decorated harpsichord runs', defaultVoice: 'Kore' },
-  { id: 'afrobeats', name: 'Contemporary Afrobeats', style: 'Polyrhythmic vocal swings, syncopated bounce, rhythmic focus', defaultVoice: 'Sadaltager' },
-  { id: 'lofi', name: 'Chilled Lofi Hip-Hop', style: 'Vinyl crackle, lazy vocal drags, muted low-pass filter style', defaultVoice: 'Leda' },
-  { id: 'bossa', name: 'Bossa Nova Jazz', style: 'Gentle, romantic sway, soft Portuguese-inspired consonants', defaultVoice: 'Leda' }
+  {
+    id: 'rock',
+    name: 'Rock',
+    subgenres: [
+      { id: 'arena-rock', name: 'Arena Rock' },
+      { id: 'hard-rock', name: 'Hard Rock' },
+      { id: 'glam-rock', name: 'Glam Rock' },
+      { id: 'indie-rock', name: 'Indie Rock' },
+      { id: 'garage-rock', name: 'Garage Rock' },
+      { id: 'blues-rock', name: 'Blues Rock' },
+      { id: 'progressive-rock', name: 'Progressive Rock' },
+      { id: 'math-rock', name: 'Math Rock' },
+      { id: 'psychedelic-rock', name: 'Psychedelic Rock' },
+      { id: 'southern-rock', name: 'Southern Rock' },
+      { id: 'surf-rock', name: 'Surf Rock' },
+      { id: 'gothic-rock', name: 'Gothic Rock' },
+      { id: 'alternative-rock', name: 'Alternative Rock' },
+      { id: 'soft-rock', name: 'Soft Rock' },
+      { id: 'classic-rock', name: 'Classic Rock' },
+      { id: 'folk-rock', name: 'Folk Rock' }
+    ],
+    style: 'Highly rhythmic, rock instrumentation, varied tempos',
+    defaultVoice: 'Charon'
+  },
+  {
+    id: 'electronic',
+    name: 'Electronic',
+    subgenres: [
+      { id: 'house', name: 'House' },
+      { id: 'deep-house', name: 'Deep House' },
+      { id: 'tech-house', name: 'Tech House' },
+      { id: 'progressive-house', name: 'Progressive House' },
+      { id: 'electro-house', name: 'Electro House' },
+      { id: 'future-house', name: 'Future House' },
+      { id: 'trance', name: 'Trance' },
+      { id: 'psytrance', name: 'Psytrance' },
+      { id: 'techno', name: 'Techno' },
+      { id: 'acid-techno', name: 'Acid Techno' },
+      { id: 'dub-techno', name: 'Dub Techno' },
+      { id: 'drum-and-bass', name: 'Drum & Bass' },
+      { id: 'jungle', name: 'Jungle' },
+      { id: 'breakbeat', name: 'Breakbeat' },
+      { id: 'uk-garage', name: 'UK Garage' },
+      { id: 'future-bass', name: 'Future Bass' }
+    ],
+    style: 'Synthetic sounds, rhythmic patterns, electronic instrumentation',
+    defaultVoice: 'Puck'
+  },
+  {
+    id: 'hip-hop',
+    name: 'Hip Hop',
+    subgenres: [
+      { id: 'boom-bap', name: 'Boom Bap' },
+      { id: 'trap', name: 'Trap' },
+      { id: 'drill', name: 'Drill' },
+      { id: 'lo-fi-hip-hop', name: 'Lo-fi Hip Hop' },
+      { id: 'conscious-hip-hop', name: 'Conscious Hip Hop' },
+      { id: 'jazz-rap', name: 'Jazz Rap' },
+      { id: 'cloud-rap', name: 'Cloud Rap' },
+      { id: 'memphis-rap', name: 'Memphis Rap' },
+      { id: 'west-coast', name: 'West Coast' },
+      { id: 'east-coast', name: 'East Coast' },
+      { id: 'g-funk', name: 'G-Funk' },
+      { id: 'experimental-hip-hop', name: 'Experimental Hip Hop' },
+      { id: 'alternative-hip-hop', name: 'Alternative Hip Hop' }
+    ],
+    style: 'Rhythmic delivery, lyrical content, vocal flow',
+    defaultVoice: 'Fenrir'
+  },
+  {
+    id: 'jazz',
+    name: 'Jazz',
+    subgenres: [
+      { id: 'bebop', name: 'Bebop' },
+      { id: 'hard-bop', name: 'Hard Bop' },
+      { id: 'cool-jazz', name: 'Cool Jazz' },
+      { id: 'modal-jazz', name: 'Modal Jazz' },
+      { id: 'fusion', name: 'Jazz Fusion' },
+      { id: 'latin-jazz', name: 'Latin Jazz' },
+      { id: 'gypsy-jazz', name: 'Gypsy Jazz' },
+      { id: 'smooth-jazz', name: 'Smooth Jazz' },
+      { id: 'free-jazz', name: 'Free Jazz' },
+      { id: 'vocal-jazz', name: 'Vocal Jazz' }
+    ],
+    style: 'Improvised harmonic complexity, swing rhythm, diverse instrumentation',
+    defaultVoice: 'Leda'
+  },
+  {
+    id: 'classical',
+    name: 'Classical',
+    subgenres: [
+      { id: 'baroque', name: 'Baroque' },
+      { id: 'romantic', name: 'Romantic' },
+      { id: 'impressionist', name: 'Impressionist' },
+      { id: 'minimalist', name: 'Minimalist' },
+      { id: 'chamber', name: 'Chamber' },
+      { id: 'symphony', name: 'Symphony' },
+      { id: 'opera', name: 'Opera' },
+      { id: 'choral', name: 'Choral' },
+      { id: 'contemporary-classical', name: 'Contemporary Classical' },
+      { id: 'film-score', name: 'Film Score' }
+    ],
+    style: 'Orchestral arrangements, composed notation, dynamic range',
+    defaultVoice: 'Kore'
+  },
+  {
+    id: 'metal',
+    name: 'Metal',
+    subgenres: [
+      { id: 'heavy', name: 'Heavy' },
+      { id: 'thrash', name: 'Thrash' },
+      { id: 'death', name: 'Death' },
+      { id: 'black', name: 'Black' },
+      { id: 'doom', name: 'Doom' },
+      { id: 'power', name: 'Power' },
+      { id: 'progressive', name: 'Progressive' },
+      { id: 'metalcore', name: 'Metalcore' },
+      { id: 'djent', name: 'Djent' },
+      { id: 'folk-metal', name: 'Folk Metal' },
+      { id: 'industrial-metal', name: 'Industrial Metal' },
+      { id: 'symphonic-metal', name: 'Symphonic Metal' }
+    ],
+    style: 'Heavy distortion, aggressive vocals, complex rhythms',
+    defaultVoice: 'Puck'
+  },
+  {
+    id: 'ambient',
+    name: 'Ambient',
+    subgenres: [
+      { id: 'dark-ambient', name: 'Dark Ambient' },
+      { id: 'drone', name: 'Drone' },
+      { id: 'ambient-dream', name: 'Ambient Dream-Pop' },
+      { id: 'noise-ambient', name: 'Noise Ambient' }
+    ],
+    style: 'Atmospheric textures, sustained tones, minimalistic evolution',
+    defaultVoice: 'Leda'
+  },
+  {
+    id: 'world',
+    name: 'World',
+    subgenres: [
+      { id: 'latin', name: 'Latin' },
+      { id: 'afro', name: 'Afro' },
+      { id: 'middle-east', name: 'Middle East' },
+      { id: 'asian', name: 'Asian' },
+      { id: 'african', name: 'African' }
+    ],
+    style: 'Traditional instruments, cultural rhythms, regional vocal styles',
+    defaultVoice: 'Sadaltager'
+  }
 ];
 
 const PRESETS = [
